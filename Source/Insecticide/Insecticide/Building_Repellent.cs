@@ -10,10 +10,7 @@ namespace Insecticide
         private CompGlower glowerComp;
         private CompPowerTrader powerComp;
         private bool destroyedFlag = false;
-        private IntVec3 centerLoc;
-
         private List<IntVec3> originalThickRoof = new List<IntVec3>();
-
 
         // Called when building is spawned.
         public override void SpawnSetup(Map map, bool respawningAfterLoad)
@@ -24,15 +21,8 @@ namespace Insecticide
             // Get reference to the components CompPowerTrader and CompGlower
             SetPowerGlower();
 
-            //Log.Message("Placing repellent Building with an effective radius of " + this.def.specialDisplayRadius);
-            //Log.Message("Count of cells affected should be " + GenRadial.RadialCellsAround(this.Position, this.def.specialDisplayRadius, true).Count());
-
-            //OutputAffectedCells(this.Position, this.def.specialDisplayRadius, map, "initialCells.txt");
-            //CellMap(this.Position, map, "cellGrid.csv");
-
+            // List of IntVec3 cells to query later for changes
             GetOriginalRoofInRange();
-
-            centerLoc = base.Position;
         }
 
         public void SetPowerGlower()
@@ -89,10 +79,9 @@ namespace Insecticide
 
         private void DoTickerWork(int tickerAmount)
         {
-
             if (powerComp.PowerOn)
             {
-                if (GridsUtility.Roofed(this.centerLoc, this.Map))
+                if (GridsUtility.Roofed(base.Position, this.Map))
                 {
                     if (!BreakdownableUtility.IsBrokenDown(this))
                     {
@@ -106,115 +95,21 @@ namespace Insecticide
             }
             else
             {
+                // Set roofs that were changed back to being thickRoof
                 ResetRoofInRange();
 
+                // Stop using power
                 powerComp.PowerOutput = 0;
             }
 
         }
 
-        //private void OutputAffectedCells(IntVec3 center, float radius, Map map, string outputFile)
-        //{
-        //    List<string> outputText = new List<string>();
-        //    foreach (IntVec3 cell in GenRadial.RadialCellsAround(center, radius, true))
-        //    {
-        //        if(cell.Roofed(map))
-        //            outputText.Add(GridsUtility.GetRoof(cell, map).defName + " isThickRoof: " + GridsUtility.GetRoof(cell, map).isThickRoof + " at " + cell.x + ", " + cell.z);
-        //    }
-        //    string formattedString = string.Join("\n", outputText.ToArray());
-        //    System.IO.File.WriteAllText(outputFile, formattedString);
-
-        //}
-
-        //private void CellMap(IntVec3 center, Map map, string outputFile)
-        //{
-        //    int width = 100;
-        //    int height = 100;
-
-        //    int startX = center.x - (width / 2);
-        //    int startZ = center.z - (width / 2);
-
-        //    int endX = center.x + (width / 2);
-        //    int endZ = center.z + (width / 2);
-
-        //    string[,] vs = new string[width, height];
-
-        //    Log.Message("Looking at cells between x" + startX + " and x" + endX);
-        //    Log.Message("Looking at cells between z" + startZ + " and z" + endZ);
-
-        //    //for (int i = 0; i < width; i++)
-        //    //{
-        //    //    for (int j = 0; j < height; j++)
-        //    //    {
-        //    //        RoofDef currRoof = GridsUtility.GetRoof(new IntVec3(startX + i, 0, endZ - j), map);
-        //    //        if(currRoof != null)
-        //    //        {
-        //    //            if (currRoof.defName == "RoofConstructed")
-        //    //            {
-        //    //                vs[i, j] = "c";
-        //    //            }
-        //    //            else if (currRoof.defName == "RoofRockThin")
-        //    //            {
-        //    //                vs[i, j] = "r";
-        //    //            }
-        //    //            else if (currRoof.defName == "RoofRockThick")
-        //    //            {
-        //    //                vs[i, j] = "t";
-        //    //            }
-        //    //            else
-        //    //            {
-        //    //                vs[i, j] = "_";
-        //    //            }
-        //    //        }
-        //    //        else
-        //    //        {
-        //    //            vs[i, j] = "n";
-        //    //        }
-        //    //    }
-        //    //}
-
-        //    for (int i = 0; i < width; i++)
-        //    {
-        //        for (int j = 0; j < height; j++)
-        //        {
-        //            RoofDef currRoof = GridsUtility.GetRoof(new IntVec3(startX + i, 0, endZ - j), map);
-        //            if (currRoof != null)
-        //            {
-        //                if (currRoof.isThickRoof)
-        //                {
-        //                    vs[i, j] = "T";
-        //                }
-        //                else
-        //                {
-        //                    vs[i, j] = "_";
-        //                }
-        //            }
-        //            else
-        //            {
-        //                vs[i, j] = "n";
-        //            }
-        //        }
-        //    }
-
-        //    using (var sw = new System.IO.StreamWriter(outputFile))
-        //    {
-        //        for (int i = 0; i < width; i++)
-        //        {
-        //            for (int j = 0; j < height; j++)
-        //            {
-        //                sw.Write(vs[j, i] + ", ");
-        //            }
-        //            sw.Write("\n");
-        //        }
-
-        //        sw.Flush();
-        //        sw.Close();
-        //    }
-        //}
-
+        /// <summary>
+        /// Resets RoofClean RoofDefs back to RoofRockThick upon power loss or destroyed
+        /// </summary>
         private void ResetRoofInRange()
         {
-            foreach (IntVec3 cell in GenRadial.RadialCellsAround(this.centerLoc, this.def.specialDisplayRadius, true))
+            foreach (IntVec3 cell in GenRadial.RadialCellsAround(base.Position, this.def.specialDisplayRadius, true))
             {
                 if (cell.InBounds(base.Map))
                 {
@@ -230,10 +125,12 @@ namespace Insecticide
             }
         }
 
-
+        /// <summary>
+        /// Sets a list of cells that will be changed so that they can be reverted if removed.
+        /// </summary>
         private void GetOriginalRoofInRange()
         {
-            foreach (IntVec3 cell in GenRadial.RadialCellsAround(this.centerLoc, this.def.specialDisplayRadius, true))
+            foreach (IntVec3 cell in GenRadial.RadialCellsAround(base.Position, this.def.specialDisplayRadius, true))
             {
                 if (cell.InBounds(base.Map))
                 {
@@ -248,6 +145,9 @@ namespace Insecticide
             }
         }
 
+        /// <summary>
+        /// Stops removing roof exploit. Resets cells in range that may have been removed
+        /// </summary>
         private void ResetRemovedRoof()
         {
             foreach (IntVec3 cell in originalThickRoof)
@@ -260,9 +160,12 @@ namespace Insecticide
             }
         }
 
+        /// <summary>
+        /// Sets thickRoofed cells in specialDisplayRadius to RoofClean RoofDef
+        /// </summary>
         private void SetRoofInRange()
         {
-            foreach (IntVec3 cell in GenRadial.RadialCellsAround(this.centerLoc, this.def.specialDisplayRadius, true))
+            foreach (IntVec3 cell in GenRadial.RadialCellsAround(base.Position, this.def.specialDisplayRadius, true))
             {
                 if (cell.InBounds(base.Map))
                 {
@@ -276,50 +179,7 @@ namespace Insecticide
                     }
                 }
             }
-            //Log.Message("Set " + count + " roof in range");
-            //OutputAffectedCells(centerLoc, this.def.specialDisplayRadius, base.Map, "changedCells.txt");
-            //CellMap(centerLoc, base.Map, "cellGrid_post.csv");
         }
-
-
-
-        //private void SetRoofInRange()
-        //{
-        //    int count = 0;
-        //    foreach (IntVec3 cell in GenRadial.RadialCellsAround(this.centerLoc, this.def.specialDisplayRadius, true))
-        //    {
-        //        if (cell.InBounds(base.Map))
-        //        {
-        //            bool flag = GridsUtility.Roofed(cell, base.Map);
-        //            if (flag)
-        //            {
-        //                bool flag2 = roofDef.defName == "RockRoofThin";
-        //                if (flag2)
-        //                {
-
-        //                }
-        //                roofDef = GridsUtility.GetRoof(cell, base.Map);
-        //                bool flag3 = roofDef.filthLeaving == ThingDef.Named("RockRubble");
-        //                if (flag3)
-        //                {
-        //                    roofEdifice = GridsUtility.GetEdifice(cell, base.Map);
-        //                    bool flag4 = roofEdifice != null && roofEdifice.def.building.isNaturalRock;
-        //                    if (flag4)
-        //                    {
-        //                        roofEdifice.def.building.isNaturalRock = false;
-        //                    }
-        //                    //roofDef.isNatural = false;
-        //                    roofDef.isThickRoof = false;
-        //                    roofGrid.SetRoof(cell, roofDef);
-        //                    count++;
-        //                }
-        //            }
-        //        }
-        //    }
-        //    Log.Message("Set " + count + " roof in range");
-        //    OutputAffectedCells(centerLoc, this.def.specialDisplayRadius, base.Map, "changedCells.txt");
-        //    CellMap(centerLoc, base.Map, "cellGrid_post.csv");
-        //}
 
         public override string GetInspectString()
         {
