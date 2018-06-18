@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ModMetaData>
+  <name>Insecticide</name>
+  <author>Symons</author>
+  <targetVersion>0.18.0</targetVersion>
+  <description>V1.0
+  This mod adds an insecticide object to reduce infestation chances
+  </description>
+</ModMetaData>
