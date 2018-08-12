@@ -6,7 +6,7 @@
     <label>cleaned roof</label>
     <isThickRoof>false</isThickRoof>
     <isNatural>false</isNatural>
-    <filthLeaving>RockRubble</filthLeaving>
+    <filthLeaving>Filth_RubbleRock</filthLeaving>
     <soundPunchThrough>RoofCollapse</soundPunchThrough>
   </RoofDef>
 

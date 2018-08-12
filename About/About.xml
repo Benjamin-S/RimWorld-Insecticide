@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <ModMetaData>
-  <name>Insecticide</name>
-  <author>Benjamin-S</author>
-  <targetVersion>0.18.0</targetVersion>
+  <name>[TWC] Insecticide</name>
+  <author>The White Crayon</author>
+  <targetVersion>0.19.0</targetVersion>
   <description>V1.0
-  This mod adds an insecticide building that reduces infestation chances within a specific radius
+  This mod adds an buildable bug repellent that reduces infestation chances within a specific radius
   </description>
 </ModMetaData>

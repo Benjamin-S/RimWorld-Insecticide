@@ -195,7 +195,7 @@ namespace Insecticide
 
             if (this.powerComp.PowerOn)
             {
-                stringBuilder.Append("Successfully repelling infestations.".Translate());
+                stringBuilder.Append("Repelling infestations.".Translate());
             }
             else
             {
