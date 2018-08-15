@@ -1,23 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Defs>
 
-  <!-- ============== Building Base Abstract ==================-->
-  
-  <ThingDef Name="BuildingBase" Abstract="True">
-    <category>Building</category>
-    <thingClass>Building</thingClass>
-    <soundImpactDefault>BulletImpactMetal</soundImpactDefault>
-    <selectable>true</selectable>
-    <drawerType>MapMeshAndRealTime</drawerType>
-    <terrainAffordanceNeeded>Light</terrainAffordanceNeeded>
-    <repairEffect>Repair</repairEffect>
-    <leaveResourcesWhenKilled>true</leaveResourcesWhenKilled>
-    <filthLeaving>BuildingRubble</filthLeaving>
-    <statBases>
-      <SellPriceFactor>0.70</SellPriceFactor>
-    </statBases>
-  </ThingDef>
-  
   <!-- ================ Building Repellent ====================-->
   
   <ThingDef ParentName="BuildingBase">
@@ -53,9 +36,9 @@
     <selectable>true</selectable>
     <costList>
       <Steel>1000</Steel>
-      <Component>12</Component>
+      <ComponentIndustrial>12</ComponentIndustrial>
     </costList>
-    <soundImpactDefault>BulletImpactMetal</soundImpactDefault>
+    <soundImpactDefault>BulletImpact_Metal</soundImpactDefault>
     <leaveResourcesWhenKilled>false</leaveResourcesWhenKilled>
     <resourcesFractionWhenDeconstructed>0</resourcesFractionWhenDeconstructed>
     <comps>
@@ -65,7 +48,7 @@
       </li>
       <li Class="CompProperties_Power">
         <compClass>CompPowerTrader</compClass>
-        <basePowerConsumption>800</basePowerConsumption>
+        <basePowerConsumption>1200</basePowerConsumption>
       </li>
       <li Class="CompProperties_Flickable"/>
       <li Class="CompProperties_Breakdownable"/>

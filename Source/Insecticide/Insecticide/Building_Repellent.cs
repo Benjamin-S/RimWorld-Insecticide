@@ -19,23 +19,19 @@ namespace Insecticide
             base.SpawnSetup(map, respawningAfterLoad);
 
             // Get reference to the components CompPowerTrader and CompGlower
-            SetPowerGlower();
+            this.powerComp = base.GetComp<CompPowerTrader>();
+            this.glowerComp = base.GetComp<CompGlower>();
 
             // List of IntVec3 cells to query later for changes
             GetOriginalRoofInRange();
         }
 
-        public void SetPowerGlower()
+        public override void PostMake()
         {
-            // Get references to the components CompPowerTrader and CompGlower
-            powerComp = base.GetComp<CompPowerTrader>();
-            glowerComp = base.GetComp<CompGlower>();
-
-            // Default the power to 0 so that no power is going in or out
-            powerComp.PowerOutput = 0;
+            base.PostMake();
         }
 
-        public override void Destroy(DestroyMode mode = DestroyMode.Vanish)
+        public override void DeSpawn(DestroyMode mode = DestroyMode.Vanish)
         {
             // Block further ticker work
             destroyedFlag = true;
@@ -44,7 +40,7 @@ namespace Insecticide
             ResetRoofInRange();
 
             // Do the work of the base class (Building)
-            base.Destroy(mode);
+            base.DeSpawn(mode);
         }
 
         public override void TickRare()
@@ -79,7 +75,8 @@ namespace Insecticide
 
         private void DoTickerWork(int tickerAmount)
         {
-            if (powerComp.PowerOn)
+            bool flag = (this.powerComp == null || this.powerComp.PowerOn);
+            if (flag && base.Spawned)
             {
                 if (GridsUtility.Roofed(base.Position, this.Map))
                 {
@@ -97,9 +94,6 @@ namespace Insecticide
             {
                 // Set roofs that were changed back to being thickRoof
                 ResetRoofInRange();
-
-                // Stop using power
-                powerComp.PowerOutput = 0;
             }
 
         }
@@ -185,21 +179,11 @@ namespace Insecticide
         {
             StringBuilder stringBuilder = new StringBuilder();
 
-            string baseString = base.GetInspectString();
+            string inspectString = base.GetInspectString();
 
-            if (!baseString.NullOrEmpty())
+            if (!inspectString.NullOrEmpty())
             {
-                stringBuilder.Append(baseString);
-                stringBuilder.AppendLine();
-            }
-
-            if (this.powerComp.PowerOn)
-            {
-                stringBuilder.Append("Repelling infestations.".Translate());
-            }
-            else
-            {
-                stringBuilder.Append("Not repelling infestations. You are in danger.".Translate());
+                stringBuilder.Append(inspectString);
             }
 
             return stringBuilder.ToString().TrimEndNewlines();

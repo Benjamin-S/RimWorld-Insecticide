@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="Building_Repellent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Main.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -7,7 +7,7 @@
     <isThickRoof>false</isThickRoof>
     <isNatural>false</isNatural>
     <filthLeaving>Filth_RubbleRock</filthLeaving>
-    <soundPunchThrough>RoofCollapse</soundPunchThrough>
+    <soundPunchThrough>Roof_Collapse</soundPunchThrough>
   </RoofDef>
 
 </Defs>
